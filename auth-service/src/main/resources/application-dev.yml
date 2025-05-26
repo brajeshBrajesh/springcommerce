@@ -1,0 +1,27 @@
+server:
+  port: 8081
+
+# Do not register with Eureka
+eureka:
+  client:
+    enabled: false
+
+# Disable config client
+spring:
+  cloud:
+    config:
+      enabled: false
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5431/authdb
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
