@@ -3,6 +3,7 @@ package com.springcommerce.auth_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Entity
 @Table(name= "users")
 @Data
@@ -11,7 +12,7 @@ import lombok.*;
 @Builder
 public class User{
     @Id
-    @GeneratedValue(strategy =GenerationType.AUTO)
+    @GeneratedValue(strategy =GenerationType.IDENTITY)
     private long id;
     @Column(nullable = false,unique = true)
     private String userName;
@@ -19,4 +20,7 @@ public class User{
     private String password;
     @Column(nullable = false,unique = true)
     private String email;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

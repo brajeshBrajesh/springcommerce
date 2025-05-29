@@ -30,6 +30,10 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/auth/test_role").hasRole("ADMIN")  // ADMIN only
+
+                        .requestMatchers("/api/auth/**").authenticated()  // other /api/auth/** just need auth
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -33,6 +33,11 @@ public class AuthController {
         boolean isValid = authService.validateToken(token);
         return ResponseEntity.ok(Map.of("valid", isValid));
     }
+    @GetMapping("/test_role")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> test_role(){
+        return ResponseEntity.ok(Map.of("isadmin",true));
+    }
 }
 
 

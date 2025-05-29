@@ -4,6 +4,7 @@ import com.netflix.discovery.converters.Auto;
 import com.springcommerce.auth_service.dto.AuthResponse;
 import com.springcommerce.auth_service.dto.LoginRequest;
 import com.springcommerce.auth_service.dto.RegisterRequest;
+import com.springcommerce.auth_service.entity.Role;
 import com.springcommerce.auth_service.entity.User;
 import com.springcommerce.auth_service.repository.UserRepository;
 import com.springcommerce.auth_service.security.JwtUtil;
@@ -33,10 +34,11 @@ public class AuthService{
         User user = User.builder()
                 .userName(request.getUserName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword())) // NOTE: Later encrypt!
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
-        String token=jwtUtil.generateToken(user.getUserName());
+        String token=jwtUtil.generateToken(user.getUserName(),user.getRole().name());
         return new AuthResponse("User registered successfully",token);
     }
 
@@ -49,7 +51,8 @@ public class AuthService{
         if (!user.getPassword().equals(password)) {
             throw new RuntimeException("Invalid password");
         }
-        String token = jwtUtil.generateToken(user.getUserName());
+        String userRole=user.getRole().name();
+        String token = jwtUtil.generateToken(user.getUserName(),userRole);
         return new AuthResponse("Login successful", token);
     }
 

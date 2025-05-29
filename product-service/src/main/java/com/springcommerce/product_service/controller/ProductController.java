@@ -1,9 +1,12 @@
 package com.springcommerce.product_service.controller;
 
+import com.springcommerce.product_service.dto.ProductRequest;
+import com.springcommerce.product_service.dto.ProductResponse;
 import com.springcommerce.product_service.entity.Product;
 import com.springcommerce.product_service.service.ProductServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +21,22 @@ public class ProductController {
     private final ProductServiceImpl productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.createProduct(product));
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+        Product product=productService.mapToEntity(request);
+        Product savedProduct=productService.createProduct(product);
+        ProductResponse productResponse=productService.mapToResponse(savedProduct);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
+//        return ResponseEntity.ok(productService.createProduct(product));
     }
 
     @PutMapping("/{id}")
@@ -44,12 +51,12 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String name) {
         return ResponseEntity.ok(productService.searchProductsByName(name));
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable String category) {
+    public ResponseEntity<List<ProductResponse>> getProductsByCategory(@PathVariable String category) {
         return ResponseEntity.ok(productService.getProductsByCategory(category));
     }
 }
