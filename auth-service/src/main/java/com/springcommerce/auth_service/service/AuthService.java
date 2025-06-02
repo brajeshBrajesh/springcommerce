@@ -38,7 +38,7 @@ public class AuthService{
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
-        String token=jwtUtil.generateToken(user.getUserName(),user.getRole().name());
+        String token=jwtUtil.generateToken(user.getUserName(),user.getRole().name(),user.getId());
         return new AuthResponse("User registered successfully",token);
     }
 
@@ -52,7 +52,8 @@ public class AuthService{
             throw new RuntimeException("Invalid password");
         }
         String userRole=user.getRole().name();
-        String token = jwtUtil.generateToken(user.getUserName(),userRole);
+        Long id=user.getId();
+        String token = jwtUtil.generateToken(user.getUserName(),userRole,id);
         return new AuthResponse("Login successful", token);
     }
 
