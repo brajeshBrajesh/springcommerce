@@ -1,4 +1,4 @@
-package com.springcommerce.product_service.security;
+package com.springcommerce.product_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

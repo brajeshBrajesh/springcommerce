@@ -20,43 +20,15 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
 
-    @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    @PostMapping("/add-product")
+    public ResponseEntity<ProductResponse> addProduct(@RequestBody ProductRequest request){
+        ProductResponse response=productService.addProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @GetMapping("/get-all-products")
+    public ResponseEntity<List<ProductResponse>> getAppProducts(){
+        List<ProductResponse> allProducts=productService.getAllProducts();
+        return ResponseEntity.status(HttpStatus.CREATED).body(allProducts);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        Product product=productService.mapToEntity(request);
-        Product savedProduct=productService.createProduct(product);
-        ProductResponse productResponse=productService.mapToResponse(savedProduct);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
-//        return ResponseEntity.ok(productService.createProduct(product));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateProduct(id, product));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String name) {
-        return ResponseEntity.ok(productService.searchProductsByName(name));
-    }
-
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<ProductResponse>> getProductsByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(productService.getProductsByCategory(category));
-    }
 }

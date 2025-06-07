@@ -1,8 +1,12 @@
 package com.springcommerce.product_service.service;
 
+import com.springcommerce.product_service.dto.CategoryDTO;
 import com.springcommerce.product_service.dto.ProductRequest;
 import com.springcommerce.product_service.dto.ProductResponse;
+import com.springcommerce.product_service.entity.Category;
 import com.springcommerce.product_service.entity.Product;
+import com.springcommerce.product_service.mappings.ProductMapper;
+import com.springcommerce.product_service.repository.CategoryRepository;
 import com.springcommerce.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,86 +20,30 @@ public class ProductServiceImpl implements ProductService {
 
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public ProductResponse addProduct(ProductRequest request){
+        List<Category> categories= categoryRepository.findAllById(request.getCategoryIds());
+
+        if (categories.size() != request.getCategoryIds().size()) {
+            throw new IllegalArgumentException("One or more category IDs are invalid.");
+        }
+
+        Product product= ProductMapper.toEntity(request,categories);
+        Product saved= productRepository.save(product);
+        return ProductMapper.toResponseDTO(saved);
+
     }
-
     @Override
-    public Product updateProduct(Long id, Product product) {
-        Product existing = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-        existing.setName(product.getName());
-        existing.setDescription(product.getDescription());
-        existing.setCategory(product.getCategory());
-        existing.setPrice(product.getPrice());
-        existing.setQuantity(product.getQuantity());
-        return productRepository.save(existing);
-    }
-
-    @Override
-    public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
-    }
-
-    @Override
-    public  List<ProductResponse> getAllProducts() {
+    public List<ProductResponse> getAllProducts(){
         List<Product> allProducts=productRepository.findAll();
-        List<ProductResponse> responseProductsList=new ArrayList<ProductResponse>();
-        for(Product product : allProducts){
-            ProductResponse productResponse=this.mapToResponse(product);
-            responseProductsList.add(productResponse);
+        List<ProductResponse> temp=new ArrayList<>();
+
+        for(Product p : allProducts){
+            ProductResponse pr=ProductMapper.toResponseDTO(p);
+            temp.add(pr);
         }
-        return responseProductsList;
-    }
-
-    @Override
-    public ProductResponse getProductById(Long id) {
-        Product product= productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-        return this.mapToResponse(product);
-    }
-
-    @Override
-    public List<ProductResponse> searchProductsByName(String name) {
-//        return productRepository.findByNameContainingIgnoreCase(name);
-
-        List<Product> allProducts=productRepository.findByNameContainingIgnoreCase(name);
-        List<ProductResponse> responseProductsList=new ArrayList<ProductResponse>();
-        for(Product product : allProducts){
-            ProductResponse productResponse=this.mapToResponse(product);
-            responseProductsList.add(productResponse);
-        }
-        return responseProductsList;
-    }
-
-    @Override
-    public List<ProductResponse> getProductsByCategory(String category) {
-        List<Product> allProducts=productRepository.findByCategory(category);
-        List<ProductResponse> responseProductsList=new ArrayList<ProductResponse>();
-        for(Product product : allProducts){
-            ProductResponse productResponse=this.mapToResponse(product);
-            responseProductsList.add(productResponse);
-        }
-        return responseProductsList;
-    }
-
-    public ProductResponse mapToResponse(Product product){
-        ProductResponse response=new ProductResponse();
-        response.setId(product.getId());
-        response.setId(product.getId());
-        response.setName(product.getName());
-        response.setDescription(product.getDescription());
-        response.setPrice(product.getPrice());
-        response.setCategory(product.getCategory());
-        return response;
-    }
-
-    public Product mapToEntity(ProductRequest request) {
-        Product product = new Product();
-        product.setName(request.getName());
-        product.setDescription(request.getDescription());
-        product.setPrice(request.getPrice());
-        product.setCategory(request.getCategory());
-        return product;
+        return temp;
     }
 }

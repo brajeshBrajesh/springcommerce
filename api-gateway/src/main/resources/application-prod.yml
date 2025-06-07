@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      uri: http://localhost:8888  # Your config server
+#      uri: http://config-server:8888
+
+

@@ -3,6 +3,8 @@ package com.springcommerce.product_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "products")
 @Data
@@ -20,12 +22,20 @@ public class Product {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private String category;
 
     @Column(nullable = false)
     private double price;
 
+    private String imageMinioPath;
+
     @Column(nullable = false)
     private int quantity;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name="product_category",
+            joinColumns = @JoinColumn(name="product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories;
 }
